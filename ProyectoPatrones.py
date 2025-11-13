@@ -44,6 +44,7 @@ class ProductBuilder:
         elif self.product_type == "tablet":
             return Tablet(self.name, self.price, self.line, self.specs.get("screen", "10.5'"))
         return None
+    
 # 2. PROTOTYPE
 
 class ElectronicProduct(ABC):
@@ -64,16 +65,13 @@ class ElectronicProduct(ABC):
         return cloned
     
     def _apply_random_variations(self):
-        # Variación de precio
         price_variation = random.uniform(0.7, 1.3)
         self.price = round(self.price * price_variation, 2)
         
-        # Sufijos aleatorios
         suffixes = ["Plus", "Pro", "Max", "Edition", "Custom", "Limited", "Turbo"]
         if random.random() > 0.4:
             self.name = f"{self.name} {random.choice(suffixes)}"
-        
-        # Ocasionalmente cambiar línea
+
         if random.random() > 0.8:
             lines = ["Económica", "Estándar", "Premium"]
             if self.line in lines:
@@ -99,7 +97,6 @@ class Computer(ElectronicProduct):
     
     def _apply_random_variations(self):
         super()._apply_random_variations()
-        # Variación específica para computadoras
         if random.random() > 0.6:
             processors = ["Intel i7", "AMD Ryzen 7", "Intel i9", "AMD Ryzen 9"]
             self.processor = random.choice(processors)
@@ -152,3 +149,49 @@ class Tablet(ElectronicProduct):
     
     def get_specifications(self):
         return f"📟 {self.name} | 🖥️ {self.screen} | 🔋 {self.battery} | 📊 Línea: {self.line}"
+    
+# 3. FACTORY METHOD - Creación Especializada
+
+class ProductFactory(ABC):
+    @abstractmethod
+    def create_computer(self) -> Computer:
+        pass
+    
+    @abstractmethod
+    def create_phone(self) -> Phone:
+        pass
+    
+    @abstractmethod
+    def create_tablet(self) -> Tablet:
+        pass
+
+class GamingFactory(ProductFactory):
+    def create_computer(self) -> Computer:
+        return Computer("Gaming Beast", 2000.00, "Premium", "Ryzen 9")
+    
+    def create_phone(self) -> Phone:
+        return Phone("Gaming Phone X", 800.00, "Premium", "256GB")
+    
+    def create_tablet(self) -> Tablet:
+        return Tablet("Gaming Tab Pro", 600.00, "Estándar", "11'")
+
+class OfficeFactory(ProductFactory):
+    def create_computer(self) -> Computer:
+        return Computer("Office Master", 800.00, "Estándar", "i5")
+    
+    def create_phone(self) -> Phone:
+        return Phone("Business Phone", 400.00, "Estándar", "128GB")
+    
+    def create_tablet(self) -> Tablet:
+        return Tablet("Office Tablet", 300.00, "Económica", "10.2'")
+
+class StudentFactory(ProductFactory):
+    def create_computer(self) -> Computer:
+        return Computer("Student Laptop", 600.00, "Económica", "i3")
+    
+    def create_phone(self) -> Phone:
+        return Phone("Campus Phone", 250.00, "Económica", "64GB")
+    
+    def create_tablet(self) -> Tablet:
+        return Tablet("Study Pad", 200.00, "Económica", "10.1'")
+
