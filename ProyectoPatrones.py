@@ -281,3 +281,199 @@ class PremiumSupportDecorator(ProductDecorator):
     
     def get_total_price(self):
         return self.product.price + 150
+
+
+
+# CATÁLOGO Y MENÚ PRINCIPAL
+
+class ProductCatalog:
+    def __init__(self):
+        self.products = []
+    
+    def add_product(self, product):
+        self.products.append(product)
+        print(f"✅ Producto agregado: {product}")
+    
+    def show_catalog(self):
+        if not self.products:
+            print("\n📭 El catálogo está vacío")
+            return
+            
+        print("\n📋 CATÁLOGO DE PRODUCTOS:")
+        print("=" * 70)
+        for i, product in enumerate(self.products, 1):
+            print(f"{i}. {product}")
+            print(f"   📝 {product.get_specifications()}")
+            print()
+        print("=" * 70)
+    
+    def clone_product(self, index):
+        if 0 <= index < len(self.products):
+            original = self.products[index]
+            cloned = original.clone()
+            self.add_product(cloned)
+            return cloned
+        return None
+    
+    def decorate_product(self, index, decorator_type):
+        if 0 <= index < len(self.products):
+            product = self.products[index]
+            
+            if decorator_type == "1":
+                decorated = WarrantyDecorator(product)
+            elif decorator_type == "2":
+                decorated = AccessoriesDecorator(product)
+            elif decorator_type == "3":
+                decorated = DiscountDecorator(product)
+            elif decorator_type == "4":
+                decorated = PremiumSupportDecorator(product)
+            else:
+                return None
+            
+            print(f"🎁 {decorated.get_description()}")
+            print(f"💰 Precio original: ${product.price:.2f}")
+            print(f"💰 Precio final: ${decorated.get_total_price():.2f}")
+            return decorated
+        
+        return None
+    
+    def get_stats(self):
+        if not self.products:
+            return "No hay productos en el catálogo"
+        
+        computers = sum(1 for p in self.products if isinstance(p, Computer))
+        phones = sum(1 for p in self.products if isinstance(p, Phone))
+        tablets = sum(1 for p in self.products if isinstance(p, Tablet))
+        total_value = sum(p.price for p in self.products)
+        
+        return f"📊 Estadísticas: 💻{computers} 📱{phones} 📟{tablets} | Valor total: ${total_value:.2f}"
+    
+def mostrar_menu():
+    print("\n" + "=" * 60)
+    print("🏪 SISTEMA DE GESTIÓN ELECTRÓNICA")
+    print("=" * 60)
+    print("1. 🏭 Factory Method (Gaming/Oficina/Estudiante)")
+    print("2. 🏗️ Abstract Factory (Premium/Estándar/Económica)")
+    print("3. 🔨 Builder (Producto Personalizado)")
+    print("4. 🌀 Prototype (Clonar con variaciones)")
+    print("5. 🎨 Decorator (Agregar funcionalidades)")
+    print("6. 📋 Mostrar Catálogo")
+    print("7. 📊 Estadísticas")
+    print("8. 🚪 Salir")
+    print("=" * 60)
+
+def main():
+    catalog = ProductCatalog()
+    
+    while True:
+        mostrar_menu()
+        opcion = input("👉 Selecciona una opción: ").strip()
+        
+        if opcion == "1":
+            print("\n🏭 FACTORY METHOD:")
+            print("1. 🎮 Fábrica Gaming")
+            print("2. 💼 Fábrica Oficina") 
+            print("3. 🎓 Fábrica Estudiante")
+            sub_op = input("Selecciona fábrica: ")
+            
+            if sub_op == "1":
+                factory = GamingFactory()
+                print("🎮 Creando productos gaming...")
+            elif sub_op == "2":
+                factory = OfficeFactory()
+                print("💼 Creando productos oficina...")
+            else:
+                factory = StudentFactory()
+                print("🎓 Creando productos estudiante...")
+            
+            catalog.add_product(factory.create_computer())
+            catalog.add_product(factory.create_phone())
+            catalog.add_product(factory.create_tablet())
+        
+        elif opcion == "2":
+            print("\n🏗️ ABSTRACT FACTORY:")
+            print("1. ⭐ Línea Premium")
+            print("2. 🔷 Línea Estándar")
+            print("3. 💰 Línea Económica")
+            sub_op = input("Selecciona línea: ")
+            
+            if sub_op == "1":
+                factory = PremiumLineFactory()
+                print("⭐ Creando línea premium...")
+            elif sub_op == "2":
+                factory = StandardLineFactory()
+                print("🔷 Creando línea estándar...")
+            else:
+                factory = EconomicLineFactory()
+                print("💰 Creando línea económica...")
+            
+            catalog.add_product(factory.create_computer())
+            catalog.add_product(factory.create_phone())
+            catalog.add_product(factory.create_tablet())
+        
+        elif opcion == "3":
+            print("\n🔨 BUILDER - Crear Producto Personalizado:")
+            builder = ProductBuilder()
+            
+            print("Tipos disponibles: computer, phone, tablet")
+            p_type = input("Tipo de producto: ")
+            name = input("Nombre del producto: ")
+            price = float(input("Precio: $"))
+            line = input("Línea (Premium/Estándar/Económica): ")
+            
+            product = (builder.reset()
+                      .set_type(p_type)
+                      .set_name(name)
+                      .set_price(price)
+                      .set_line(line)
+                      .build())
+            
+            if product:
+                catalog.add_product(product)
+            else:
+                print("❌ Error: Tipo de producto no válido")
+        
+        elif opcion == "4":
+            print("\n🌀 PROTOTYPE - Clonar Producto:")
+            catalog.show_catalog()
+            if catalog.products:
+                try:
+                    idx = int(input("Número del producto a clonar: ")) - 1
+                    cloned = catalog.clone_product(idx)
+                    if cloned:
+                        print(f"✅ Clon creado exitosamente!")
+                except (ValueError, IndexError):
+                    print("❌ Número de producto no válido")
+        
+        elif opcion == "5":
+            print("\n🎨 DECORATOR - Agregar funcionalidades:")
+            catalog.show_catalog()
+            if catalog.products:
+                try:
+                    idx = int(input("Número del producto a decorar: ")) - 1
+                    print("Decoradores disponibles:")
+                    print("1. 🛡️ Garantía extendida (+$100)")
+                    print("2. 🎧 Kit de accesorios (+$50)") 
+                    print("3. 🎯 Descuento especial (15% off)")
+                    print("4. ⭐ Soporte premium (+$150)")
+                    dec_type = input("Selecciona decorador: ")
+                    
+                    catalog.decorate_product(idx, dec_type)
+                except (ValueError, IndexError):
+                    print("❌ Número de producto no válido")
+        
+        elif opcion == "6":
+            catalog.show_catalog()
+        
+        elif opcion == "7":
+            print(f"\n{catalog.get_stats()}")
+        
+        elif opcion == "8":
+            print("👋 ¡Gracias por usar el sistema! Hasta pronto!")
+            break
+        
+        else:
+            print("❌ Opción no válida. Intenta de nuevo.")
+
+if __name__ == "__main__":
+    main()
