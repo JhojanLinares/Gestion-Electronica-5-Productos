@@ -239,3 +239,45 @@ class EconomicLineFactory(LineFactory):
     
     def create_tablet(self) -> Tablet:
         return Tablet("Simple Pad", 150.00, "Económica", "10.2'")
+
+# 5. DECORATOR
+
+class ProductDecorator(ABC):
+    def __init__(self, product: ElectronicProduct):
+        self.product = product
+    
+    @abstractmethod
+    def get_description(self):
+        pass
+    
+    @abstractmethod
+    def get_total_price(self):
+        pass
+
+class WarrantyDecorator(ProductDecorator):
+    def get_description(self):
+        return f"{self.product.name} 🛡️ +2 años garantía"
+    
+    def get_total_price(self):
+        return self.product.price + 100
+
+class AccessoriesDecorator(ProductDecorator):
+    def get_description(self):
+        return f"{self.product.name} 🎧 +Kit accesorios"
+    
+    def get_total_price(self):
+        return self.product.price + 50
+
+class DiscountDecorator(ProductDecorator):
+    def get_description(self):
+        return f"{self.product.name} 🎯 OFERTA ESPECIAL"
+    
+    def get_total_price(self):
+        return self.product.price * 0.85  # 15% descuento
+
+class PremiumSupportDecorator(ProductDecorator):
+    def get_description(self):
+        return f"{self.product.name} ⭐ Soporte premium 24/7"
+    
+    def get_total_price(self):
+        return self.product.price + 150
