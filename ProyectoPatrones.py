@@ -195,3 +195,47 @@ class StudentFactory(ProductFactory):
     def create_tablet(self) -> Tablet:
         return Tablet("Study Pad", 200.00, "Económica", "10.1'")
 
+# 4. ABSTRACT FACTORY
+
+class LineFactory(ABC):
+    @abstractmethod
+    def create_computer(self) -> Computer:
+        pass
+    
+    @abstractmethod
+    def create_phone(self) -> Phone:
+        pass
+    
+    @abstractmethod
+    def create_tablet(self) -> Tablet:
+        pass
+
+class PremiumLineFactory(LineFactory):
+    def create_computer(self) -> Computer:
+        return Computer("Quantum Pro", 2500.00, "Premium", "Intel i9")
+    
+    def create_phone(self) -> Phone:
+        return Phone("Galaxy Ultra", 1200.00, "Premium", "512GB")
+    
+    def create_tablet(self) -> Tablet:
+        return Tablet("iPad Pro Max", 1500.00, "Premium", "12.9'")
+
+class StandardLineFactory(LineFactory):
+    def create_computer(self) -> Computer:
+        return Computer("Workstation Plus", 1200.00, "Estándar", "Intel i5")
+    
+    def create_phone(self) -> Phone:
+        return Phone("Nova Prime", 600.00, "Estándar", "256GB")
+    
+    def create_tablet(self) -> Tablet:
+        return Tablet("Tab Advanced", 400.00, "Estándar", "11'")
+
+class EconomicLineFactory(LineFactory):
+    def create_computer(self) -> Computer:
+        return Computer("Essential Basic", 500.00, "Económica", "Intel i3")
+    
+    def create_phone(self) -> Phone:
+        return Phone("Spark Lite", 200.00, "Económica", "128GB")
+    
+    def create_tablet(self) -> Tablet:
+        return Tablet("Simple Pad", 150.00, "Económica", "10.2'")
